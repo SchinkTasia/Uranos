@@ -3,7 +3,7 @@
 This Fork combines [Hephaestus](https://modrinth.com/mod/hephaestus) and [Origins: Classes](https://modrinth.com/mod/origins-classes).
 The Blacksmith-Class now modifies [Hephaestus](https://modrinth.com/mod/hephaestus) (TinkersConstruct) Weapons and buffs them slightly.
 
-This Fork was created for the [Sky Journey](https://github.com/xedron-Studios/MC-Modpack-SkyJourney/) Modpack and is still in developement.
+This Fork was created for the [SkyJourney](https://github.com/xedron-Studios/MC-Modpack-SkyJourney/) Modpack and is still in developement.
 
 ## Licenses
 Code, Textures and binaries are licensed under the [MIT License](https://tldrlegal.com/license/mit-license).
