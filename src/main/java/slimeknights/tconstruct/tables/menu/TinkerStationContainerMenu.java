@@ -17,7 +17,21 @@ import slimeknights.tconstruct.tables.menu.slot.LazyResultSlot;
 import slimeknights.tconstruct.tables.menu.slot.TinkerStationSlot;
 import slimeknights.tconstruct.tools.item.ArmorSlotType;
 
+//SykJourney
+import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
+
+
+
 import javax.annotation.Nullable;
+
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +40,7 @@ public class TinkerStationContainerMenu extends TabbedContainerMenu<TinkerStatio
   @Getter
   private final List<Slot> inputSlots;
   private final LazyResultSlot resultSlot;
+  private ItemStack lastModifiedStack = ItemStack.EMPTY;
 
   /**
    * Standard constructor
@@ -112,7 +127,68 @@ public class TinkerStationContainerMenu extends TabbedContainerMenu<TinkerStatio
     }
   }
 
+  public Slot getToolSlot() {
+    return this.slots.get(0);
+  }
+
   public ItemStack getResult() {
-    return this.resultSlot.getItem();
+    ItemStack stack = this.resultSlot.getItem();
+    
+
+    if (!stack.isEmpty() && !ItemStack.matches(stack, lastModifiedStack)) {
+      try {
+        Class<?> componentClass = Class.forName("io.github.apace100.apoli.component.PowerHolderComponent");
+        Object key = componentClass.getField("KEY").get(null);
+
+        Method getMethod = key.getClass().getMethod("get", Object.class);
+        Object powerContainer = getMethod.invoke(key, this.inv.player);
+
+        Method hasPowerMethod = powerContainer.getClass().getMethod("hasPower", Class.forName("io.github.apace100.apoli.power.PowerType"));
+        Class<?> powerTypes = Class.forName("io.github.apace100.originsclasses.power.ClassPowerTypes");
+
+        Object power = powerTypes.getField("QUALITY_EQUIPMENT").get(null);
+        boolean active = (boolean) hasPowerMethod.invoke(powerContainer, power);
+
+        if (inv.player.containerMenu instanceof TinkerStationContainerMenu menu) {
+          Slot toolSlot = menu.getToolSlot();
+          ItemStack toolStack = menu.getToolSlot().getItem();
+        
+          if (!toolStack.isEmpty()) {
+            TagKey<Item> toolsTag = TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation("minecraft", "tools"));
+            if(active){
+              System.out.println("Ability active.");
+              if (toolSlot instanceof TinkerStationSlot stationSlot) {
+                if (stationSlot.isActive()) {
+                  System.out.println("✅ Toolslot ist sichtbar/aktiv");
+                } else {
+                  System.out.println("❌ Toolslot ist NICHT sichtbar");
+                }
+              }
+              
+              if (!toolStack.getItem().builtInRegistryHolder().is(toolsTag)) {
+                if(!this.resultSlot.getItem().toString().contains("air")){
+                  ToolStack SkyItem = ToolStack.from(stack);
+                  System.out.println("Item: "+this.resultSlot.getItem().toString());
+                  SkyItem.addModifier(new ModifierId("tconstruct", "blacksmith_expertise"), 1);
+                  SkyItem.rebuildStats();
+                  SkyItem.updateStack(stack);
+                  lastModifiedStack = stack.copy();
+                }
+              }
+            }
+          }else{
+            System.out.println("❌ Toolslot ist leer");
+          } 
+        }else{
+          System.out.println("❌ ContainerMenu ist NICHT vom Typ TinkerStationContainerMenu");
+        }
+
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }else{
+      System.out.println("❌ Stack ist leer oder hat sich nicht geändert");
+    }
+    return stack;
   }
 }

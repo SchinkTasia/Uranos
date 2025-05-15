@@ -95,6 +95,10 @@
   "block.tconstruct.red_clear_stained_glass_pane": "Clear Red Stained Glass Pane",
   "block.tconstruct.black_clear_stained_glass_pane": "Clear Black Stained Glass Pane",
 
+  "modifier.tconstruct.blacksmith_expertise": "Blacksmith's Expertise",
+  "modifier.tconstruct.blacksmith_expertise.description": "Grants an extra upgrade slot.",
+  "modifier.tconstruct.blacksmith_expertise.flavor": "I can make this better!",
+
   "block.tconstruct.soul_glass": "Soul Glass",
   "block.tconstruct.soul_glass_pane": "Soul Glass Pane",
 

@@ -1,0 +1,18 @@
+{
+  "type": "tconstruct:single_level",
+  "max_level": 1,
+  "requirements": {},
+  "display": {
+    "translation": "modifier.tconstruct.blacksmith_expertise",
+    "description": {
+      "translation": "modifier.tconstruct.blacksmith_expertise.description"
+    },
+    "flavor": {
+      "translation": "modifier.tconstruct.blacksmith_expertise.flavor"
+    },
+    "style": {
+      "color": "gold",
+      "italic": false
+    }
+  }
+}
