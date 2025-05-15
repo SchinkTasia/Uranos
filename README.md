@@ -5,10 +5,8 @@ The Blacksmith-Class now modifies [Hephaestus](https://modrinth.com/mod/hephaest
 
 This Fork was created for the [Sky Journey](https://github.com/xedron-Studios/MC-Modpack-SkyJourney/) Modpack and is still in developement.
 
-Changes:
-    When a blacksmith...
-        ...crafts an weapon:
-            - the weapon gets +1 upgrade slot
+Changes
+|| Crafting a weapon || the weapon gets +1 upgrade slot ||
 
 ## Licenses
 Code, Textures and binaries are licensed under the [MIT License](https://tldrlegal.com/license/mit-license).
