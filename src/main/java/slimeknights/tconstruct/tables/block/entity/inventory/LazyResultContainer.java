@@ -8,6 +8,16 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+//SkyJourney
+import slimeknights.tconstruct.library.modifiers.Modifier;
+import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierManager;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import java.lang.reflect.Method;
+
 /**
  * This class represents an output slot inventory for a crafting inventory.
  * It will calculate the result when requested based on the methods in {@link ILazyCrafter}, and update other slots on recipe take
@@ -19,6 +29,7 @@ public class LazyResultContainer implements Container {
   /** Cache of the last result */
   @Nullable
   private ItemStack result = null;
+  private ItemStack lastModified = ItemStack.EMPTY;
 
   /**
    * Gets the result of this inventory, lazy loading it if not yet calculated
@@ -36,6 +47,41 @@ public class LazyResultContainer implements Container {
     if (result == null) {
       result = Objects.requireNonNull(crafter.calcResult(player), "Result cannot be null");
     }
+
+    if (!ItemStack.matches(result, lastModified)) {
+      if (!result.isEmpty() && result.hasTag()) {
+        ToolStack tool = ToolStack.from(result);
+        ModifierId modId = new ModifierId("tconstruct", "blacksmith_expertise");
+
+        boolean hasModifier = false;
+        CompoundTag tag = result.getTag();
+        if (tag != null && tag.contains("tinkertool")) {
+          CompoundTag tinkerData = tag.getCompound("tinkertool");
+          if (tinkerData.contains("modifiers")) {
+            ListTag mods = tinkerData.getList("modifiers", 10);
+            for (int i = 0; i < mods.size(); i++) {
+              CompoundTag entry = mods.getCompound(i);
+
+              System.out.println(entry.getString("name"));
+              System.out.println(entry.getString("level"));
+
+              if (entry.getString("name").equals(modId.toString())) {
+                hasModifier = true;
+                break;
+              }
+            }
+          }
+        }
+
+        if (!hasModifier) {
+          tool.addModifier(modId, 1);
+          tool.rebuildStats();
+          tool.updateStack(result);
+        }
+        lastModified = result.copy();
+      }
+    }
+
     return result;
   }
 
