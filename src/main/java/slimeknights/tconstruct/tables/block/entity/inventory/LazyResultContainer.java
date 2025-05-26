@@ -17,6 +17,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import java.lang.reflect.Method;
+import net.minecraft.world.item.Item;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.resources.ResourceLocation;
+import slimeknights.tconstruct.tables.menu.TinkerStationContainerMenu;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 /**
  * This class represents an output slot inventory for a crafting inventory.
@@ -54,6 +60,8 @@ public class LazyResultContainer implements Container {
         ModifierId modId = new ModifierId("tconstruct", "blacksmith_expertise");
 
         boolean hasModifier = false;
+        boolean hasTool = false;
+
         CompoundTag tag = result.getTag();
         if (tag != null && tag.contains("tinkertool")) {
           CompoundTag tinkerData = tag.getCompound("tinkertool");
@@ -72,8 +80,23 @@ public class LazyResultContainer implements Container {
             }
           }
         }
+        
+        // Tag definieren: entspricht <tag:items:c:tools>
+        TagKey<Item> toolsTag = TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation("c", "tools"));
+  
+        for (Slot slot : menu.getInputSlots()) {
+          ItemStack input = slot.getItem();
+          if (!input.isEmpty()) {
+            Item item = input.getItem();
+      
+            if (item.builtInRegistryHolder().is(toolsTag)) {
+              System.out.println("✅ Tag <c:tools> gefunden bei: " + input.getDisplayName().getString());
+              hasTool = true;
+            }
+          }
+        }
 
-        if (!hasModifier) {
+        if (!hasModifier && !hasTool) {
           tool.addModifier(modId, 1);
           tool.rebuildStats();
           tool.updateStack(result);

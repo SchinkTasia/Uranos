@@ -48,59 +48,7 @@ public class LazyResultSlot extends Slot {
 
   @Override
   public void onTake(Player player, ItemStack stack) {
-    if (stack == null || stack.isEmpty() || !stack.hasTag()) {
-      System.out.println("⚠️ Kein valider Tinker-Stack – Verarbeitung abgebrochen.");
-      inventory.craftResult(player, amountCrafted);
-      amountCrafted = 0;
-      return;
-    }
-    
-    ToolStack tool = ToolStack.from(stack);
-    
-
-    System.out.println("Item: "+tool.getItem().toString());
-    System.out.println("Etappe 1: onTake gestartet");
-
-    try {
-      System.out.println("Etappe 2: Lade PowerHolderComponent");
-      Class<?> componentClass = Class.forName("io.github.apace100.apoli.component.PowerHolderComponent");
-
-      System.out.println("Etappe 3: Zugriff auf KEY-Feld");
-      Object key = componentClass.getField("KEY").get(null);
-
-      System.out.println("Etappe 4: Rufe get(player) auf");
-      Method getMethod = key.getClass().getMethod("get", Object.class);
-      Object powerContainer = getMethod.invoke(key, player);
-
-      System.out.println("Etappe 5: Suche hasPower-Methode");
-      Method hasPowerMethod = powerContainer.getClass().getMethod("hasPower", Class.forName("io.github.apace100.apoli.power.PowerType"));
-
-      System.out.println("Etappe 6: Lade ClassPowerTypes");
-      Class<?> powerTypes = Class.forName("io.github.apace100.originsclasses.power.ClassPowerTypes");
-
-      System.out.println("Etappe 7: Hole QUALITY_EQUIPMENT-Power");
-      Object power = powerTypes.getField("QUALITY_EQUIPMENT").get(null);
-
-      System.out.println("Etappe 8: Rufe hasPower mit QUALITY_EQUIPMENT auf");
-      boolean active = (boolean) hasPowerMethod.invoke(powerContainer, power);
-
-      System.out.println("Etappe 9: Ergebnis - Power ist " + (active ? "AKTIV!" : "NICHT aktiv."));
-
-    } catch (Exception e) {
-      System.out.println("Etappe X: Fehler beim Zugriff auf Apoli oder OriginsClasses!");
-      e.printStackTrace(); // optional: stack trace für Debug
-    }
-
     inventory.craftResult(player, amountCrafted);
-
-    if (!tool.isBroken()) {
-  
-      ModifierId modifierId = new ModifierId("tconstruct", "blacksmith_expertise");
-      Modifier modifier = ModifierManager.INSTANCE.get(modifierId);
-      tool.addModifier(new ModifierId("tconstruct", "blacksmith_expertise"), 1);
-      tool.rebuildStats();
-    }
-  
     amountCrafted = 0;
 
     if (player.containerMenu instanceof TinkerStationContainerMenu menu) {
